@@ -5,18 +5,19 @@ from pathlib import Path
 import numpy as np
 import shutil
 
-# Load a pretrained YOLOv8s-seg Segment model
-model = YOLO("/home/rl/workspace/LLM_Robot/Segmentation/assets/yolov8l-seg.pt")
+work_folder = "/home/tianzong/Documents/workspace/perception/"
 
-# Load the input image
-input_image_path = "/home/rl/workspace/LLM_Robot/ZED/output/rgb/000000.png"
+model = YOLO(work_folder + "assets/yolov8l-seg.pt")
+
+input_image_path = Path(work_folder + "video/rgb/000000.png")
+print("[INFO] Processing image:", input_image_path)
 input_image = cv2.imread(input_image_path)
 input_height, input_width = input_image.shape[:2]
 
 # Run inference on the image
 results = model(input_image_path)
 
-output_dir = Path("./output/")
+output_dir = Path(work_folder + "seg/output/")
 output_dir.mkdir(parents=True, exist_ok=True)
 
 # Copy the original image to the output folder
