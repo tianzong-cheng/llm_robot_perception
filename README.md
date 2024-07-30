@@ -12,6 +12,10 @@ Install from [StereoLabs](https://www.stereolabs.com/developers/release). The AI
 
 Simply `pip install ultralytics`.
 
+### iii. Assets
+
+Download from [JBox](https://jbox.sjtu.edu.cn/l/n1b4yu) and extract it to the root folder: `assets/mesh` and `assets/cam_K.txt`.
+
 ## II. Docker Environment for FoundationPose
 
 If you are running this project on a 40-series GPU, use [this docker image](https://hub.docker.com/r/shingarey/foundationpose_custom_cuda121) (refer to [this](https://github.com/NVlabs/FoundationPose/issues/27)). Note that this is the default.
@@ -31,3 +35,5 @@ Run `run.sh` under the root directory.
 First, 30 frames will be captured to `video/` folder at 15 FPS and exported to `.png` format. Then, the `seg/draw_mask_cup.py` script will draw the mask of the mug. Finally, run FoundationPose.
 
 You can change how many frames is recorded in `ZED/record.py`.
+
+The output is under `FoundationPose/debug/ob_in_cam`, in the format of a homogeneous transformation matrix.
