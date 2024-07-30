@@ -59,11 +59,20 @@ else:
                     (input_width, input_height),
                     interpolation=cv2.INTER_NEAREST,
                 )
-                cv2.imwrite(str(f"./output/cup_{i}.jpg"), single_cup_mask_resized)
+                cv2.imwrite(
+                    str(work_folder + f"seg/output/cup_{i}.jpg"),
+                    single_cup_mask_resized,
+                )
+                cv2.imwrite(
+                    str(work_folder + "video/masks/000000.png"), single_cup_mask_resized
+                )
 
                 # Create a masked version of the input image for each cup
                 single_cup_mask_resized = single_cup_mask_resized.astype(np.uint8)
                 single_masked_image = cv2.bitwise_and(
                     input_image, input_image, mask=single_cup_mask_resized
                 )
-                cv2.imwrite(str(f"./output/masked_cup_{i}.jpg"), single_masked_image)
+                cv2.imwrite(
+                    str(work_folder + f"seg/output/masked_cup_{i}.jpg"),
+                    single_masked_image,
+                )
