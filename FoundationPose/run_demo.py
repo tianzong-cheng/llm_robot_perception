@@ -10,6 +10,7 @@
 from estimater import *
 from datareader import *
 import argparse
+from scipy.spatial.transform import Rotation
 
 work_folder = "/home/tianzong/Documents/workspace/perception/"
 
@@ -65,6 +66,11 @@ if __name__=='__main__':
 
     os.makedirs(f'{debug_dir}/ob_in_cam', exist_ok=True)
     np.savetxt(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}.txt', pose.reshape(4,4))
+    np.savetxt(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}_trans.txt', pose[:3, 3])
+    rot_mat = pose[:3, :3]
+    rot = Rotation.from_matrix(rot_mat)
+    quat = rot.as_quat()
+    np.savetxt(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}_rot.txt', quat)
 
     if debug>=1:
       center_pose = pose@np.linalg.inv(to_origin)
