@@ -1,7 +1,8 @@
+import os
 import sys
 import pyzed.sl as sl
 
-work_folder = "/home/tianzong/Documents/workspace/perception/"
+work_folder = os.getenv("LLM_PERCEPTION_PATH")
 
 zed = sl.Camera()
 
@@ -21,7 +22,7 @@ if open_error != sl.ERROR_CODE.SUCCESS:
 
 # Start recording
 
-output_path = work_folder + "video/video.svo"
+output_path = work_folder + "/video/video.svo"
 rec_para = sl.RecordingParameters()
 rec_para.video_filename = output_path
 rec_para.compression_mode = sl.SVO_COMPRESSION_MODE.LOSSLESS

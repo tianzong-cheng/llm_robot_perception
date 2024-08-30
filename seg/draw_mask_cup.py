@@ -1,3 +1,4 @@
+import os
 from ultralytics import YOLO
 import cv2
 import torch
@@ -5,11 +6,11 @@ from pathlib import Path
 import numpy as np
 import shutil
 
-work_folder = "/home/tianzong/Documents/workspace/perception/"
+work_folder = os.getenv("LLM_PERCEPTION_PATH")
 
-model = YOLO(work_folder + "assets/yolov8l-seg.pt")
+model = YOLO(work_folder + "/assets/yolov8l-seg.pt")
 
-input_image_path = Path(work_folder + "video/rgb/000000.png")
+input_image_path = Path(work_folder + "/video/rgb/000000.png")
 print("[INFO] Processing image:", input_image_path)
 input_image = cv2.imread(input_image_path)
 input_height, input_width = input_image.shape[:2]
@@ -17,7 +18,7 @@ input_height, input_width = input_image.shape[:2]
 # Run inference on the image
 results = model(input_image_path)
 
-output_dir = Path(work_folder + "seg/output/")
+output_dir = Path(work_folder + "/seg/output/")
 output_dir.mkdir(parents=True, exist_ok=True)
 
 # Copy the original image to the output folder
@@ -60,11 +61,11 @@ else:
                     interpolation=cv2.INTER_NEAREST,
                 )
                 cv2.imwrite(
-                    str(work_folder + f"seg/output/cup_{i}.jpg"),
+                    str(work_folder + f"/seg/output/cup_{i}.jpg"),
                     single_cup_mask_resized,
                 )
                 cv2.imwrite(
-                    str(work_folder + "video/masks/000000.png"), single_cup_mask_resized
+                    str(work_folder + "/video/masks/000000.png"), single_cup_mask_resized
                 )
 
                 # Create a masked version of the input image for each cup
@@ -73,6 +74,6 @@ else:
                     input_image, input_image, mask=single_cup_mask_resized
                 )
                 cv2.imwrite(
-                    str(work_folder + f"seg/output/masked_cup_{i}.jpg"),
+                    str(work_folder + f"/seg/output/masked_cup_{i}.jpg"),
                     single_masked_image,
                 )

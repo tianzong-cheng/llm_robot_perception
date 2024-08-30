@@ -7,18 +7,19 @@
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 
 
+import os
 from estimater import *
 from datareader import *
 import argparse
 from scipy.spatial.transform import Rotation
 
-work_folder = "/home/tianzong/Documents/workspace/perception/"
+work_folder = os.getenv("LLM_PERCEPTION_PATH")
 
 if __name__=='__main__':
   parser = argparse.ArgumentParser()
   code_dir = os.path.dirname(os.path.realpath(__file__))
-  parser.add_argument('--mesh_file', type=str, default=work_folder+'assets/mesh/mug/mug.obj')
-  parser.add_argument('--test_scene_dir', type=str, default=work_folder+'video')
+  parser.add_argument('--mesh_file', type=str, default=work_folder+'/assets/mesh/mug/mug.obj')
+  parser.add_argument('--test_scene_dir', type=str, default=work_folder+'/video')
   parser.add_argument('--est_refine_iter', type=int, default=5)
   parser.add_argument('--track_refine_iter', type=int, default=2)
   parser.add_argument('--debug', type=int, default=1)
