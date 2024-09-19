@@ -24,7 +24,35 @@ If you are running the project for the first time, you need to manually run `Fou
 
 Follow [FoundationPose README](https://github.com/NVlabs/FoundationPose?tab=readme-ov-file#data-prepare) and download weight files (demo data are not needed).
 
-### iv. Misc
+### iv. Grounded SAM 2
+
+You need to create a Python venv for Grounded SAM 2.
+
+```bash
+cd Grounded-SAM-2
+python3 -m venv gdino-env
+source gdino_env/bin/activate
+pip3 install torch torchvision torchaudio
+# Check CUDA path:
+# which nvcc
+export CUDA_HOME=/usr/local/cuda-12.4
+pip install -e .
+pip install --no-build-isolation -e grounding_dino
+pip install opencv-python supervision pycocotools transformers addict yapf timm
+```
+
+Download `SAM 2` and `Grounding DINO` checkpoints.
+
+```bash
+cd Grounded-SAM-2
+cd checkpoints
+bash download_ckpts.sh
+cd ..
+cd gdino_checkpoints
+bash download_ckpts.sh
+```
+
+### v. Misc
 
 Download from [JBox](https://jbox.sjtu.edu.cn/l/n1b4yu) and extract it to the root folder: `assets/mesh` and `assets/cam_K.txt`.
 

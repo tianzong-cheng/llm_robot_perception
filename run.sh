@@ -14,7 +14,14 @@ python3 ZED/record.py
 python3 ZED/svo_export.py --mode 4 --input_svo_file ./video/video.svo2 --output_path_dir ./video/
 
 # Draw mask
-python3 seg/draw_mask_cup.py
+rm -rf Grounded-SAM-2/output
+source ./Grounded-SAM-2/gdino_env/bin/activate
+cd Grounded-SAM-2
+python3 llm_robot_seg.py
+cd ..
+deactivate
+
+cp ./Grounded-SAM-2/outputs/grounded_sam2_local_demo/mask.png ./video/masks/000000.png
 
 # Run FoundationPose
 docker rm -f foundationpose_cuda121

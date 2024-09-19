@@ -145,3 +145,5 @@ dmypy.json
 outputs/
 
 .idea/
+
+gdino_env/
