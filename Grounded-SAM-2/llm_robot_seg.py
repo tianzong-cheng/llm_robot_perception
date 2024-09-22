@@ -12,11 +12,12 @@ from sam2.sam2_image_predictor import SAM2ImagePredictor
 from grounding_dino.groundingdino.util.inference import load_model, load_image, predict
 
 work_folder = os.getenv("LLM_PERCEPTION_PATH")
+with open(work_folder + "/../temp/gdino_text_prompt.txt", "r") as file:
+    TEXT_PROMPT = file.read()
 
 """
 Hyper parameters
 """
-TEXT_PROMPT = "a red cup."
 IMG_PATH = work_folder + "/video/rgb/000000.png"
 SAM2_CHECKPOINT = "./checkpoints/sam2_hiera_large.pt"
 SAM2_MODEL_CONFIG = "sam2_hiera_l.yaml"
