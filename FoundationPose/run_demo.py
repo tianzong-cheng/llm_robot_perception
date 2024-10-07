@@ -67,11 +67,12 @@ if __name__=='__main__':
 
     os.makedirs(f'{debug_dir}/ob_in_cam', exist_ok=True)
     np.savetxt(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}.txt', pose.reshape(4,4))
-    np.savetxt(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}_trans.txt', pose[:3, 3])
+    np.savetxt(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}_pose.txt', pose[:3, 3].reshape(1,3))
     rot_mat = pose[:3, :3]
     rot = Rotation.from_matrix(rot_mat)
     quat = rot.as_quat()
-    np.savetxt(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}_rot.txt', quat)
+    with open(f'{debug_dir}/ob_in_cam/{reader.id_strs[i]}_pose.txt', 'a') as f:
+      np.savetxt(f, quat.reshape(1,4))
 
     if debug>=1:
       center_pose = pose@np.linalg.inv(to_origin)
