@@ -86,7 +86,6 @@ def calibrate_hand_eye(images, positions, chessboard_size, square_size):
             cv2.Rodrigues(rvec, R_target)
             R_target2cam.append(R_target)
             t_target2cam.append(tvec)
-            print(tvec)
 
             # Convert Euler angles to rotation matrix
             rotation_matrix = euler_to_rotation_matrix(pos[3:])
