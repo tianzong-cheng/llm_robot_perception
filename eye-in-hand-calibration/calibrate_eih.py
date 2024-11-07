@@ -53,9 +53,14 @@ def euler_to_rotation_matrix(angles):
     return R
 
 
-camera_K = np.array([[478.5675, 0, 336.3325],
-                     [0, 478.8125, 188.4455],
-                     [0, 0, 1]])
+mtx = np.array([
+    [1.91938077e+03, 0.00000000e+00, 1.10501574e+03],
+    [0.00000000e+00, 1.91971387e+03, 6.57137962e+02],
+    [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]
+])
+
+dist = np.array([[-7.37720547e-02, 8.03354701e-02,
+                2.05805953e-03, 7.28050570e-05, -3.02262430e-01]])
 
 
 def calibrate_hand_eye(images, positions, chessboard_size, square_size):
@@ -82,7 +87,7 @@ def calibrate_hand_eye(images, positions, chessboard_size, square_size):
             # cv2.waitKey(0)
 
             success, rvec, tvec = cv2.solvePnP(
-                objp, corners2, camera_K, None)
+                objp, corners2, mtx, dist)
             cv2.Rodrigues(rvec, R_target)
             R_target2cam.append(R_target)
             t_target2cam.append(tvec)
@@ -100,7 +105,7 @@ def calibrate_hand_eye(images, positions, chessboard_size, square_size):
     R_target2cam = np.array(R_target2cam)
     t_target2cam = np.array(t_target2cam)
 
-    R_gripper, T_gripper = cv2.calibrateHandEye(
+    R_cam2gripper, T_cam2gripper = cv2.calibrateHandEye(
         R_gripper2base,
         t_gripper2base,
         R_target2cam,
@@ -108,19 +113,52 @@ def calibrate_hand_eye(images, positions, chessboard_size, square_size):
         method=cv2.CALIB_HAND_EYE_TSAI
     )
 
-    return R_gripper, T_gripper
+    return R_cam2gripper, T_cam2gripper
 
 
 if __name__ == "__main__":
     image_folder = './ZED'
     pos_file = './ZED/pos.txt'
     chessboard_size = (10, 7)
-    square_size = 0.03  # meters
+    square_size = 0.0297  # meters
 
     images, positions = load_images_and_positions(image_folder, pos_file)
 
-    R_gripper, T_gripper = calibrate_hand_eye(
+    R_cam2gripper, T_cam2gripper = calibrate_hand_eye(
         images, positions, chessboard_size, square_size)
 
-    print("Rotation Matrix:\n", R_gripper)
-    print("Translation Vector:\n", T_gripper)
+    print("Rotation Matrix:\n", R_cam2gripper)
+    print("Translation Vector:\n", T_cam2gripper)
+
+    # testing:
+    target_points_base = []
+
+    objp = np.zeros((chessboard_size[0] * chessboard_size[1], 3), np.float32)
+    objp[:, :2] = np.mgrid[0:chessboard_size[0],
+                           0:chessboard_size[1]].T.reshape(-1, 2) * square_size
+
+    for img, pos in zip(images, positions):
+        ret, corners = cv2.findChessboardCorners(img, chessboard_size, None)
+
+        if ret:
+            corners2 = cv2.cornerSubPix(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), corners, (11, 11), (-1, -1),
+                                        criteria=(cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001))
+
+            success, rvec, tvec = cv2.solvePnP(objp, corners2, mtx, dist)
+            target_point_in_cam = np.array(tvec).reshape(3, 1)
+            target_point_in_gripper = R_cam2gripper @ target_point_in_cam + T_cam2gripper
+
+            R_gripper2base = euler_to_rotation_matrix(pos[3:])
+            t_gripper2base = pos[:3].reshape(3, 1)
+            target_point_in_base = R_gripper2base @ target_point_in_gripper + t_gripper2base
+
+            print("Target point in base coordinates (calculated):",
+                  target_point_in_base.flatten())
+            target_points_base.append(target_point_in_base.flatten())
+
+    target_points_base = np.array(target_points_base)
+    mean_point = np.mean(target_points_base, axis=0)
+    errors = np.linalg.norm(target_points_base - mean_point, axis=1)
+    rmse = np.sqrt(np.mean(errors ** 2))
+
+    print("RMSE:", rmse)
