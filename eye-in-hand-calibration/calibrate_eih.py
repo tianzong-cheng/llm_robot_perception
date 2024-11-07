@@ -88,7 +88,7 @@ def calibrate_hand_eye(images, positions, chessboard_size, square_size):
 
             success, rvec, tvec = cv2.solvePnP(
                 objp, corners2, mtx, dist)
-            cv2.Rodrigues(rvec, R_target)
+            R_target, _ = cv2.Rodrigues(rvec)
             R_target2cam.append(R_target)
             t_target2cam.append(tvec)
 
@@ -127,8 +127,8 @@ if __name__ == "__main__":
     R_cam2gripper, T_cam2gripper = calibrate_hand_eye(
         images, positions, chessboard_size, square_size)
 
-    print("Rotation Matrix:\n", R_cam2gripper)
-    print("Translation Vector:\n", T_cam2gripper)
+    print("Rotation Matrix:\n", R_cam2gripper.flatten())
+    print("Translation Vector:\n", T_cam2gripper.flatten())
 
     # testing:
     target_points_base = []
@@ -152,8 +152,8 @@ if __name__ == "__main__":
             t_gripper2base = pos[:3].reshape(3, 1)
             target_point_in_base = R_gripper2base @ target_point_in_gripper + t_gripper2base
 
-            print("Target point in base coordinates (calculated):",
-                  target_point_in_base.flatten())
+            # print("Target point in base coordinates (calculated):",
+            #       target_point_in_base.flatten())
             target_points_base.append(target_point_in_base.flatten())
 
     target_points_base = np.array(target_points_base)
